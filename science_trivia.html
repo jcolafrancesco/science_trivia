@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeu de Trivia Scientifique</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        .container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 80%;
+            max-width: 600px;
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+        }
+        .question {
+            margin: 20px 0;
+        }
+        .options button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .options button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin: 20px 0;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Jeu de Trivia Scientifique</h1>
+        <div class="question" id="question"></div>
+        <div class="options" id="options"></div>
+        <div class="result" id="result"></div>
+        <button id="next" style="display: none;" onclick="loadNextQuestion()">Question Suivante</button>
+    </div>
+
+    <script>
+        const questions = [
+            { question: "Quel est le symbole chimique de l'eau ?", options: ["H2O", "O2", "H2O2", "CO2"], answer: "H2O" },
+            { question: "Combien y a-t-il de planètes dans le Système Solaire ?", options: ["7", "8", "9", "10"], answer: "8" },
+            { question: "Quelle est la vitesse de la lumière dans le vide ?", options: ["300 000 km/s", "150 000 km/s", "500 000 km/s", "600 000 km/s"], answer: "300 000 km/s" },
+            { question: "Qui a développé la théorie de la relativité ?", options: ["Isaac Newton", "Albert Einstein", "Galilée", "Nikola Tesla"], answer: "Albert Einstein" },
+            { question: "Quelle est la centrale énergétique de la cellule ?", options: ["Noyau", "Ribosome", "Mitochondrie", "Chloroplaste"], answer: "Mitochondrie" },
+            { question: "Quel est le numéro atomique de l'hydrogène ?", options: ["1", "2", "3", "4"], answer: "1" },
+            { question: "Quelle planète est connue sous le nom de planète rouge ?", options: ["Terre", "Mars", "Jupiter", "Saturne"], answer: "Mars" },
+            { question: "Quel gaz les plantes absorbent-elles de l'atmosphère ?", options: ["Oxygène", "Azote", "Dioxyde de carbone", "Hydrogène"], answer: "Dioxyde de carbone" },
+            { question: "Quel est le gaz le plus abondant dans l'atmosphère terrestre ?", options: ["Oxygène", "Azote", "Dioxyde de carbone", "Argon"], answer: "Azote" },
+            { question: "Quel est le symbole chimique de l'or ?", options: ["Au", "Ag", "Pb", "Fe"], answer: "Au" },
+            { question: "Quel élément a le numéro atomique le plus élevé ?", options: ["Uranium", "Hydrogène", "Oganesson", "Fer"], answer: "Oganesson" },
+            { question: "Quelle est la substance naturelle la plus dure sur Terre ?", options: ["Or", "Fer", "Diamant", "Graphite"], answer: "Diamant" },
+            { question: "Quelle planète est connue comme la jumelle de la Terre ?", options: ["Mars", "Jupiter", "Vénus", "Saturne"], answer: "Vénus" },
+            { question: "Quel est le point d'ébullition de l'eau au niveau de la mer ?", options: ["100°C", "90°C", "110°C", "120°C"], answer: "100°C" },
+            { question: "Quel est le type d'étoile le plus commun dans la Voie lactée ?", options: ["Géante rouge", "Naine rouge", "Géante bleue", "Naine blanche"], answer: "Naine rouge" },
+            { question: "Quel type de liaison est formé lorsque des atomes partagent des électrons ?", options: ["Liaison ionique", "Liaison covalente", "Liaison hydrogène", "Liaison métallique"], answer: "Liaison covalente" },
+            { question: "Comment appelle-t-on le centre d'un atome ?", options: ["Électron", "Neutron", "Noyau", "Proton"], answer: "Noyau" },
+            { question: "Quelle planète est la plus proche du Soleil ?", options: ["Terre", "Mars", "Mercure", "Vénus"], answer: "Mercure" },
+            { question: "Quel est le plus grand organe du corps humain ?", options: ["Cœur", "Foie", "Peau", "Poumons"], answer: "Peau" },
+            { question: "Quelle est la formule chimique du sel de table ?", options: ["NaCl", "KCl", "CaCl2", "MgCl2"], answer: "NaCl" },
+            { question: "Quel est l'élément le plus abondant dans l'univers ?", options: ["Oxygène", "Carbone", "Hydrogène", "Hélium"], answer: "Hydrogène" },
+            { question: "Qui est considéré comme le père de la physique moderne ?", options: ["Isaac Newton", "Albert Einstein", "Galilée", "Niels Bohr"], answer: "Isaac Newton" },
+            { question: "Quelle est la centrale énergétique de la cellule ?", options: ["Noyau", "Ribosome", "Mitochondrie", "Chloroplaste"], answer: "Mitochondrie" },
+            { question: "Quel est le numéro atomique du carbone ?", options: ["6", "8", "10", "12"], answer: "6" },
+            { question: "Quel gaz les humains expirent-ils ?", options: ["Oxygène", "Azote", "Dioxyde de carbone", "Hélium"], answer: "Dioxyde de carbone" },
+            { question: "Quel est le centre du système solaire ?", options: ["Terre", "Lune", "Soleil", "Mars"], answer: "Soleil" },
+            { question: "Quel élément est un gaz noble ?", options: ["Hydrogène", "Oxygène", "Argon", "Azote"], answer: "Argon" },
+            { question: "Quelle planète est connue pour ses anneaux ?", options: ["Mars", "Jupiter", "Saturne", "Uranus"], answer: "Saturne" },
+            { question: "Quel est le gaz principal dans l'atmosphère terrestre ?", options: ["Oxygène", "Azote", "Dioxyde de carbone", "Hélium"], answer: "Azote" },
+            { question: "Quel est l'élément le plus abondant dans le corps humain ?", options: ["Oxygène", "Carbone", "Hydrogène", "Azote"], answer: "Oxygène" },
+            { question: "Quelle est la formule chimique de l'ammoniac ?", options: ["NH3", "H2O", "CO2", "CH4"], answer: "NH3" },
+            { question: "Quel est le centre d'un atome appelé ?", options: ["Électron", "Neutron", "Noyau", "Proton"], answer: "Noyau" },
+            { question: "Quelle planète est connue comme la jumelle de la Terre ?", options: ["Mars", "Jupiter", "Vénus", "Saturne"], answer: "Vénus" },
+            { question: "Quel est le point d'ébullition de l'eau au niveau de la mer ?", options: ["100°C", "90°C", "110°C", "120°C"], answer: "100°C" },
+            { question: "Quel est le type d'étoile le plus commun dans la Voie lactée ?", options: ["Géante rouge", "Naine rouge", "Géante bleue", "Naine blanche"], answer: "Naine rouge" },
+            { question: "Quel type de liaison est formé lorsque des atomes partagent des électrons ?", options: ["Liaison ionique", "Liaison covalente", "Liaison hydrogène", "Liaison métallique"], answer: "Liaison covalente" },
+            { question: "Quelle est la formule chimique du méthane ?", options: ["CH4", "C2H6", "C3H8", "C4H10"], answer: "CH4" },
+            { question: "Quel est l'élément le plus léger du tableau périodique ?", options: ["Hélium", "Hydrogène", "Lithium", "Béryllium"], answer: "Hydrogène" },
+            { question: "Quelle planète est connue comme la planète bleue ?", options: ["Mars", "Jupiter", "Terre", "Neptune"], answer: "Terre" },
+            { question: "Quel est le symbole chimique du fer ?", options: ["Fe", "Ir", "I", "In"], answer: "Fe" },
+            { question: "Quel élément a le numéro atomique le plus élevé ?", options: ["Uranium", "Hydrogène", "Oganesson", "Fer"], answer: "Oganesson" },
+            { question: "Quelle est la substance naturelle la plus dure sur Terre ?", options: ["Or", "Fer", "Diamant", "Graphite"], answer: "Diamant" },
+            { question: "Quelle planète est connue comme la jumelle de la Terre ?", options: ["Mars", "Jupiter", "Vénus", "Saturne"], answer: "Vénus" },
+            { question: "Quel est le point d'ébullition de l'eau au niveau de la mer ?", options: ["100°C", "90°C", "110°C", "120°C"], answer: "100°C" },
+            { question: "Quel est le type d'étoile le plus commun dans la Voie lactée ?", options: ["Géante rouge", "Naine rouge", "Géante bleue", "Naine blanche"], answer: "Naine rouge" },
+            { question: "Quel type de liaison est formé lorsque des atomes partagent des électrons ?", options: ["Liaison ionique", "Liaison covalente", "Liaison hydrogène", "Liaison métallique"], answer: "Liaison covalente" },
+            { question: "Comment appelle-t-on le centre d'un atome ?", options: ["Électron", "Neutron", "Noyau", "Proton"], answer: "Noyau" },
+            { question: "Quelle planète est la plus proche du Soleil ?", options: ["Terre", "Mars", "Mercure", "Vénus"], answer: "Mercure" },
+            { question: "Quel est le plus grand organe du corps humain ?", options: ["Cœur", "Foie", "Peau", "Poumons"], answer: "Peau" },
+            { question: "Quelle est la formule chimique du sel de table ?", options: ["NaCl", "KCl", "CaCl2", "MgCl2"], answer: "NaCl" },
+            { question: "Quel est l'élément le plus abondant dans l'univers ?", options: ["Oxygène", "Carbone", "Hydrogène", "Hélium"], answer: "Hydrogène" },
+            { question: "Qui est considéré comme le père de la physique moderne ?", options: ["Isaac Newton", "Albert Einstein", "Galilée", "Niels Bohr"], answer: "Isaac Newton" },
+            { question: "Quelle est la centrale énergétique de la cellule ?", options: ["Noyau", "Ribosome", "Mitochondrie", "Chloroplaste"], answer: "Mitochondrie" },
+            { question: "Quel est le numéro atomique du carbone ?", options: ["6", "8", "10", "12"], answer: "6" },
+            { question: "Quel gaz les humains expirent-ils ?", options: ["Oxygène", "Azote", "Dioxyde de carbone", "Hélium"], answer: "Dioxyde de carbone" },
+            { question: "Quel est le centre du système solaire ?", options: ["Terre", "Lune", "Soleil", "Mars"], answer: "Soleil" },
+            { question: "Quel élément est un gaz noble ?", options: ["Hydrogène", "Oxygène", "Argon", "Azote"], answer: "Argon" },
+            { question: "Quelle planète est connue pour ses anneaux ?", options: ["Mars", "Jupiter", "Saturne", "Uranus"], answer: "Saturne" },
+            { question: "Quel est le gaz principal dans l'atmosphère terrestre ?", options: ["Oxygène", "Azote", "Dioxyde de carbone", "Hélium"], answer: "Azote" },
+            { question: "Quel est l'élément le plus abondant dans le corps humain ?", options: ["Oxygène", "Carbone", "Hydrogène", "Azote"], answer: "Oxygène" },
+            { question: "Quelle est la formule chimique de l'ammoniac ?", options: ["NH3", "H2O", "CO2", "CH4"], answer: "NH3" },
+            { question: "Quel est le centre d'un atome appelé ?", options: ["Électron", "Neutron", "Noyau", "Proton"], answer: "Noyau" },
+            { question: "Quelle planète est connue comme la jumelle de la Terre ?", options: ["Mars", "Jupiter", "Vénus", "Saturne"], answer: "Vénus" },
+            { question: "Quel est le point d'ébullition de l'eau au niveau de la mer ?", options: ["100°C", "90°C", "110°C", "120°C"], answer: "100°C" },
+            { question: "Quel est le type d'étoile le plus commun dans la Voie lactée ?", options: ["Géante rouge", "Naine rouge", "Géante bleue", "Naine blanche"], answer: "Naine rouge" },
+            { question: "Quel type de liaison est formé lorsque des atomes partagent des électrons ?", options: ["Liaison ionique", "Liaison covalente", "Liaison hydrogène", "Liaison métallique"], answer: "Liaison covalente" },
+            { question: "Quelle est la formule chimique du méthane ?", options: ["CH4", "C2H6", "C3H8", "C4H10"], answer: "CH4" },
+            { question: "Quel est l'élément le plus léger du tableau périodique ?", options: ["Hélium", "Hydrogène", "Lithium", "Béryllium"], answer: "Hydrogène" },
+            { question: "Quelle planète est connue comme la planète bleue ?", options: ["Mars", "Jupiter", "Terre", "Neptune"], answer: "Terre" },
+            { question: "Quel est le symbole chimique du fer ?", options: ["Fe", "Ir", "I", "In"], answer: "Fe" },
+            { question: "Quel élément a le numéro atomique le plus élevé ?", options: ["Uranium", "Hydrogène", "Oganesson", "Fer"], answer: "Oganesson" },
+            { question: "Quelle est la substance naturelle la plus dure sur Terre ?", options: ["Or", "Fer", "Diamant", "Graphite"], answer: "Diamant" },
+            { question: "Quelle planète est connue comme la jumelle de la Terre ?", options: ["Mars", "Jupiter", "Vénus", "Saturne"], answer: "Vénus" },
+            { question: "Quel est le point d'ébullition de l'eau au niveau de la mer ?", options: ["100°C", "90°C", "110°C", "120°C"], answer: "100°C" },
+            { question: "Quel est le type d'étoile le plus commun dans la Voie lactée ?", options: ["Géante rouge", "Naine rouge", "Géante bleue", "Naine blanche"], answer: "Naine rouge" },
+            { question: "Quel type de liaison est formé lorsque des atomes partagent des électrons ?", options: ["Liaison ionique", "Liaison covalente", "Liaison hydrogène", "Liaison métallique"], answer: "Liaison covalente" },
+            { question: "Comment appelle-t-on le centre d'un atome ?", options: ["Électron", "Neutron", "Noyau", "Proton"], answer: "Noyau" },
+            { question: "Quelle planète est la plus proche du Soleil ?", options: ["Terre", "Mars", "Mercure", "Vénus"], answer: "Mercure" },
+            { question: "Quel est le plus grand organe du corps humain ?", options: ["Cœur", "Foie", "Peau", "Poumons"], answer: "Peau" },
+            { question: "Quelle est la formule chimique du sel de table ?", options: ["NaCl", "KCl", "CaCl2", "MgCl2"], answer: "NaCl" },
+            { question: "Quel est l'élément le plus abondant dans l'univers ?", options: ["Oxygène", "Carbone", "Hydrogène", "Hélium"], answer: "Hydrogène" },
+            { question: "Qui est considéré comme le père de la physique moderne ?", options: ["Isaac Newton", "Albert Einstein", "Galilée", "Niels Bohr"], answer: "Isaac Newton" },
+            { question: "Quelle est la centrale énergétique de la cellule ?", options: ["Noyau", "Ribosome", "Mitochondrie", "Chloroplaste"], answer: "Mitochondrie" },
+            { question: "Quel est le numéro atomique du carbone ?", options: ["6", "8", "10", "12"], answer: "6" },
+            { question: "Quel gaz les humains expirent-ils ?", options: ["Oxygène", "Azote", "Dioxyde de carbone", "Hélium"], answer: "Dioxyde de carbone" },
+            { question: "Quel est le centre du système solaire ?", options: ["Terre", "Lune", "Soleil", "Mars"], answer: "Soleil" },
+            { question: "Quel élément est un gaz noble ?", options: ["Hydrogène", "Oxygène", "Argon", "Azote"], answer: "Argon" },
+            { question: "Quelle planète est connue pour ses anneaux ?", options: ["Mars", "Jupiter", "Saturne", "Uranus"], answer: "Saturne" },
+            { question: "Quel est le gaz principal dans l'atmosphère terrestre ?", options: ["Oxygène", "Azote", "Dioxyde de carbone", "Hélium"], answer: "Azote" },
+            { question: "Quel est l'élément le plus abondant dans le corps humain ?", options: ["Oxygène", "Carbone", "Hydrogène", "Azote"], answer: "Oxygène" },
+            { question: "Quelle est la formule chimique de l'ammoniac ?", options: ["NH3", "H2O", "CO2", "CH4"], answer: "NH3" },
+            { question: "Quel est le centre d'un atome appelé ?", options: ["Électron", "Neutron", "Noyau", "Proton"], answer: "Noyau" }
+        ];
+
+        let currentQuestionIndex = 0;
+
+        function loadQuestion(index) {
+            const questionElement = document.getElementById('question');
+            const optionsElement = document.getElementById('options');
+            const resultElement = document.getElementById('result');
+            const nextButton = document.getElementById('next');
+
+            questionElement.innerHTML = questions[index].question;
+            optionsElement.innerHTML = '';
+            resultElement.innerHTML = '';
+            nextButton.style.display = 'none';
+
+            questions[index].options.forEach(option => {
+                const button = document.createElement('button');
+                button.innerHTML = option;
+                button.onclick = () => checkAnswer(option, questions[index].answer);
+                optionsElement.appendChild(button);
+            });
+        }
+
+        function checkAnswer(selected, correct) {
+            const resultElement = document.getElementById('result');
+            const nextButton = document.getElementById('next');
+            if (selected === correct) {
+                resultElement.innerHTML = 'Correct!';
+                resultElement.style.color = 'green';
+            } else {
+                resultElement.innerHTML = `Faux! La bonne réponse est ${correct}.`;
+                resultElement.style.color = 'red';
+            }
+            nextButton.style.display = 'block';
+        }
+
+        function loadNextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                loadQuestion(currentQuestionIndex);
+            } else {
+                const container = document.querySelector('.container');
+                container.innerHTML = '<h1>Félicitations!</h1><p>Vous avez complété le quiz.</p>';
+            }
+        }
+
+        loadQuestion(currentQuestionIndex);
+    </script>
+</body>
+</html>
