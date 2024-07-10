@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeu d'Addition</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f0f0f0;
+        }
+
+        #game {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            display: inline-block;
+            margin-top: 50px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #options button {
+            margin: 5px;
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #007BFF;
+            color: white;
+            transition: background-color 0.3s;
+        }
+
+        #options button:hover {
+            background-color: #0056b3;
+        }
+
+        #question {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        #score {
+            margin-top: 20px;
+        }
+
+        #goodScore {
+            color: green;
+        }
+
+        #badScore {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div id="game">
+        <h1>Jeu d'Addition</h1>
+        <div id="config">
+            <label for="maxValue">Chiffre maximum: </label>
+            <input type="number" id="maxValue" value="20" min="1" max="100">
+            <button onclick="startGame()">Démarrer</button>
+        </div>
+        <div id="question"></div>
+        <div id="options"></div>
+        <div id="score">
+            <p>Bons points: <span id="goodScore">0</span></p>
+            <p>Mauvais points: <span id="badScore">0</span></p>
+        </div>
+    </div>
+    <script>
+        let goodScore = 0;
+        let badScore = 0;
+
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function generateQuestion() {
+            const maxVal = parseInt(document.getElementById('maxValue').value);
+            const num1 = getRandomInt(1, maxVal);
+            const num2 = getRandomInt(1, maxVal);
+            const correctAnswer = num1 + num2;
+            let wrongAnswer1 = correctAnswer;
+            let wrongAnswer2 = correctAnswer;
+
+            while (wrongAnswer1 === correctAnswer) {
+                wrongAnswer1 = correctAnswer + getRandomInt(1, 10);
+            }
+
+            while (wrongAnswer2 === correctAnswer || wrongAnswer2 === wrongAnswer1 || wrongAnswer2 < 0) {
+                wrongAnswer2 = correctAnswer - getRandomInt(1, 10);
+            }
+
+            const answers = [correctAnswer, wrongAnswer1, wrongAnswer2].sort(() => Math.random() - 0.5);
+
+            document.getElementById('question').innerText = `${num1} + ${num2} = ?`;
+            const optionsDiv = document.getElementById('options');
+            optionsDiv.innerHTML = '';
+
+            answers.forEach(answer => {
+                const button = document.createElement('button');
+                button.innerText = answer;
+                button.addEventListener('click', () => checkAnswer(answer, correctAnswer));
+                optionsDiv.appendChild(button);
+            });
+        }
+
+        function checkAnswer(selectedAnswer, correctAnswer) {
+            if (selectedAnswer === correctAnswer) {
+                goodScore++;
+                document.getElementById('goodScore').innerText = goodScore;
+            } else {
+                badScore++;
+                document.getElementById('badScore').innerText = badScore;
+            }
+            generateQuestion();
+        }
+
+        function startGame() {
+            document.getElementById('config').style.display = 'none';
+            generateQuestion();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JEU D'IDENTIFICATION DE FORMES</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            text-transform: uppercase;
+        }
+        .shape {
+            width: 20vmin;
+            height: 20vmin;
+            margin-bottom: 20px;
+        }
+        .circle {
+            border-radius: 50%;
+            background-color: red;
+        }
+        .square {
+            background-color: blue;
+        }
+        .triangle {
+            width: 0;
+            height: 0;
+            border-left: 10vmin solid transparent;
+            border-right: 10vmin solid transparent;
+            border-bottom: 20vmin solid green;
+        }
+        .rectangle {
+            width: 30vmin;
+            height: 20vmin;
+            background-color: purple;
+        }
+        .oval {
+            width: 30vmin;
+            height: 15vmin;
+            border-radius: 50% / 25%;
+            background-color: orange;
+        }
+        .pentagon {
+            position: relative;
+            width: 10.8vmin;
+            border-width: 0 3.6vmin 6.2vmin 3.6vmin;
+            border-style: solid;
+            border-color: transparent transparent yellow transparent;
+        }
+        .pentagon:before {
+            content: "";
+            position: absolute;
+            top: -4.4vmin;
+            left: -3.6vmin;
+            width: 0;
+            border-width: 0 5.4vmin 4.4vmin 5.4vmin;
+            border-style: solid;
+            border-color: transparent transparent yellow transparent;
+        }
+        .cube {
+            width: 20vmin;
+            height: 20vmin;
+            position: relative;
+            transform: rotateX(-30deg) rotateY(45deg);
+            transform-style: preserve-3d;
+        }
+        .cube div {
+            position: absolute;
+            width: 20vmin;
+            height: 20vmin;
+            background: rgba(255, 0, 0, 0.5);
+            border: 1px solid #000;
+        }
+        .cube .front  { transform: translateZ(10vmin); }
+        .cube .back   { transform: rotateY(180deg) translateZ(10vmin); }
+        .cube .right  { transform: rotateY(90deg) translateZ(10vmin); }
+        .cube .left   { transform: rotateY(-90deg) translateZ(10vmin); }
+        .cube .top    { transform: rotateX(90deg) translateZ(10vmin); }
+        .cube .bottom { transform: rotateX(-90deg) translateZ(10vmin); }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            font-size: 2vmin;
+        }
+    </style>
+</head>
+<body>
+    <div id="shape" class="shape"></div>
+    <div id="choices">
+        <button onclick="checkAnswer('Cercle')">CERCLE</button>
+        <button onclick="checkAnswer('Carré')">CARRÉ</button>
+        <button onclick="checkAnswer('Triangle')">TRIANGLE</button>
+        <button onclick="checkAnswer('Rectangle')">RECTANGLE</button>
+        <button onclick="checkAnswer('Ovale')">OVALE</button>
+        <button onclick="checkAnswer('Pentagone')">PENTAGONE</button>
+        <button onclick="checkAnswer('Cube')">CUBE</button>
+    </div>
+    </div>
+    <p id="result"></p>
+    <script>
+        const shapes = [
+            { type: 'Cercle', class: 'circle' },
+            { type: 'Carré', class: 'square' },
+            { type: 'Triangle', class: 'triangle' },
+            { type: 'Rectangle', class: 'rectangle' },
+            { type: 'Ovale', class: 'oval' },
+            { type: 'Pentagone', class: 'pentagon' },
+            { type: 'Cube', class: 'cube' }
+        ];
+
+        let currentShape;
+
+        function showShape() {
+            const randomIndex = Math.floor(Math.random() * shapes.length);
+            currentShape = shapes[randomIndex];
+            const shapeDiv = document.getElementById('shape');
+            shapeDiv.className = 'shape ' + currentShape.class;
+            if (currentShape.type === 'Cube') {
+                shapeDiv.innerHTML = `
+                    <div class="front"></div>
+                    <div class="back"></div>
+                    <div class="right"></div>
+                    <div class="left"></div>
+                    <div class="top"></div>
+                    <div class="bottom"></div>
+                `;
+            } else {
+                shapeDiv.innerHTML = '';
+            }
+            document.getElementById('result').innerText = '';
+        }
+
+        function checkAnswer(answer) {
+            if (answer === currentShape.type) {
+                document.getElementById('result').innerText = 'Correct !';
+            } else {
+                document.getElementById('result').innerText = 'Incorrect, essayez encore.';
+            }
+            setTimeout(showShape, 1000);
+        }
+
+        // Initial call to show the first shape
+        showShape();
+    </script>
+</body>
+</html>
