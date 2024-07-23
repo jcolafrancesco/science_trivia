@@ -8,17 +8,17 @@
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            background-color: #f0f0f0;
+            background-color: #ffe6f2;
         }
 
         #game {
-            background-color: #fff;
-            border: 1px solid #ddd;
+            background-color: #ffccff;
+            border: 1px solid #ff99cc;
             border-radius: 10px;
             padding: 20px;
             display: inline-block;
             margin-top: 50px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 0 20px rgba(255, 105, 180, 0.5);
         }
 
         #options button {
@@ -28,19 +28,20 @@
             cursor: pointer;
             border: none;
             border-radius: 5px;
-            background-color: #007BFF;
+            background-color: #ff66b3;
             color: white;
             transition: background-color 0.3s;
         }
 
         #options button:hover {
-            background-color: #0056b3;
+            background-color: #ff3399;
         }
 
         #question {
             font-size: 24px;
             font-weight: bold;
             margin-bottom: 20px;
+            color: #ff0080;
         }
 
         #score {
@@ -53,6 +54,31 @@
 
         #badScore {
             color: red;
+        }
+
+        #config {
+            margin-bottom: 20px;
+        }
+
+        #celebration {
+            display: none;
+            margin-top: 20px;
+        }
+
+        #celebration img {
+            width: 100px;
+            height: auto;
+            animation: celebrate 1s infinite;
+        }
+
+        @keyframes celebrate {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.5); }
+            100% { transform: scale(1); }
+        }
+
+        .hidden {
+            display: none;
         }
     </style>
 </head>
@@ -69,6 +95,9 @@
         <div id="score">
             <p>Bons points: <span id="goodScore">0</span></p>
             <p>Mauvais points: <span id="badScore">0</span></p>
+        </div>
+        <div id="celebration" class="hidden">
+            <img src="https://media.istockphoto.com/id/1364557568/fr/vectoriel/cartoon-belle-t%C3%AAte-de-licorne-est-sur-le-nuage-avec-de-belles-fleurs.jpg?s=612x612&w=0&k=20&c=AMHehlvaLDNXNRcpa9s7I_4I84sVcX8wrw7CD6NMOxs=" alt="Licorne">
         </div>
     </div>
     <script>
@@ -113,6 +142,9 @@
             if (selectedAnswer === correctAnswer) {
                 goodScore++;
                 document.getElementById('goodScore').innerText = goodScore;
+                if (goodScore % 10 === 0) {
+                    showCelebration();
+                }
             } else {
                 badScore++;
                 document.getElementById('badScore').innerText = badScore;
@@ -123,6 +155,16 @@
         function startGame() {
             document.getElementById('config').style.display = 'none';
             generateQuestion();
+        }
+
+        function showCelebration() {
+            const celebration = document.getElementById('celebration');
+            celebration.classList.remove('hidden');
+            celebration.style.display = 'block';
+            setTimeout(() => {
+                celebration.classList.add('hidden');
+                celebration.style.display = 'none';
+            }, 5000);
         }
     </script>
 </body>
