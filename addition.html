@@ -66,7 +66,7 @@
         }
 
         #celebration img {
-            width: 100px;
+            width: 150px;
             height: auto;
             animation: celebrate 1s infinite;
         }
@@ -97,12 +97,19 @@
             <p>Mauvais points: <span id="badScore">0</span></p>
         </div>
         <div id="celebration" class="hidden">
-            <img src="https://media.istockphoto.com/id/1364557568/fr/vectoriel/cartoon-belle-t%C3%AAte-de-licorne-est-sur-le-nuage-avec-de-belles-fleurs.jpg?s=612x612&w=0&k=20&c=AMHehlvaLDNXNRcpa9s7I_4I84sVcX8wrw7CD6NMOxs=" alt="Licorne">
+            <img id="rewardImage" src="" alt="Récompense">
         </div>
     </div>
     <script>
         let goodScore = 0;
         let badScore = 0;
+
+        const rewardImages = [
+            'https://media1.autourdugateau.fr/13412/impression-alimentaire-danseuse-etoile.jpg',
+            'https://media.istockphoto.com/id/1364557568/fr/vectoriel/cartoon-belle-t%C3%AAte-de-licorne-est-sur-le-nuage-avec-de-belles-fleurs.jpg?s=612x612&w=0&k=20&c=AMHehlvaLDNXNRcpa9s7I_4I84sVcX8wrw7CD6NMOxs=',
+            'https://www.color-stickers.com/1906-thickbox_default/sticker-ocean-sirene-rose.jpg',
+            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRML2tzDdcZr7lKkQ5NN8pjSOsDeHLptryUiQ&s'
+        ];
 
         function getRandomInt(min, max) {
             return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -158,6 +165,8 @@
         }
 
         function showCelebration() {
+            const randomImage = rewardImages[Math.floor(Math.random() * rewardImages.length)];
+            document.getElementById('rewardImage').src = randomImage;
             const celebration = document.getElementById('celebration');
             celebration.classList.remove('hidden');
             celebration.style.display = 'block';
