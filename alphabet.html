@@ -156,8 +156,8 @@
             if (attempts < 20) {
                 setTimeout(() => {
                     feedbackDiv.style.visibility = 'hidden';
-                    generateChoices();
                 }, 1500);
+                generateChoices();
             } else {
                 feedbackDiv.innerText = `Jeu terminé!`;
                 const replayBtn = document.createElement('button');
