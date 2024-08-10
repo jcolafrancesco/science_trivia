@@ -1,0 +1,187 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apprendre l'Alphabet Grec</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #feedback {
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        #score {
+            margin-top: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+        #menu {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        #game {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="menu">
+        <h1>Apprendre l'Alphabet Grec</h1>
+        <p>Choisissez le type de lettres :</p>
+        <button onclick="startGame(true)">Lettres Majuscules</button>
+        <button onclick="startGame(false)">Lettres Minuscules</button>
+    </div>
+
+    <div id="game">
+        <h1>Apprendre l'Alphabet Grec</h1>
+        <p>Écoutez la lettre grecque et sélectionnez le bon caractère :</p>
+        <audio id="audioPlayer" src="./lettres_grecques/alpha.mp3"></audio>
+        
+        <div id="choices">
+            <!-- Les boutons de choix seront générés par le script -->
+        </div>
+
+        <div id="feedback"></div>
+        <div id="score">Score: 0/20</div>
+
+        <button id="replayAudio" onclick="playAudio()">Rejouer l'audio</button>
+    </div>
+
+    <script>
+        const letters = [
+            { name: 'alpha', file: './lettres_grecques/alpha.mp3', upper: 'Α', lower: 'α' },
+            { name: 'beta', file: './lettres_grecques/beta.mp3', upper: 'Β', lower: 'β' },
+            { name: 'gamma', file: './lettres_grecques/gamma.mp3', upper: 'Γ', lower: 'γ' },
+            { name: 'delta', file: './lettres_grecques/delta.mp3', upper: 'Δ', lower: 'δ' },
+            { name: 'epsilon', file: './lettres_grecques/épsilon.mp3', upper: 'Ε', lower: 'ε' },
+            { name: 'zeta', file: './lettres_grecques/zêta.mp3', upper: 'Ζ', lower: 'ζ' },
+            { name: 'eta', file: './lettres_grecques/êta.mp3', upper: 'Η', lower: 'η' },
+            { name: 'theta', file: './lettres_grecques/thêta.mp3', upper: 'Θ', lower: 'θ' },
+            { name: 'iota', file: './lettres_grecques/iota.mp3', upper: 'Ι', lower: 'ι' },
+            { name: 'kappa', file: './lettres_grecques/kappa.mp3', upper: 'Κ', lower: 'κ' },
+            { name: 'lambda', file: './lettres_grecques/lambda.mp3', upper: 'Λ', lower: 'λ' },
+            { name: 'mu', file: './lettres_grecques/mu.mp3', upper: 'Μ', lower: 'μ' },
+            { name: 'nu', file: './lettres_grecques/nu.mp3', upper: 'Ν', lower: 'ν' },
+            { name: 'xi', file: './lettres_grecques/ksi.mp3', upper: 'Ξ', lower: 'ξ' },
+            { name: 'omicron', file: './lettres_grecques/omicron.mp3', upper: 'Ο', lower: 'ο' },
+            { name: 'pi', file: './lettres_grecques/pi.mp3', upper: 'Π', lower: 'π' },
+            { name: 'rho', file: './lettres_grecques/rhô.mp3', upper: 'Ρ', lower: 'ρ' },
+            { name: 'sigma', file: './lettres_grecques/sigma.mp3', upper: 'Σ', lower: 'σ' },
+            { name: 'tau', file: './lettres_grecques/tau.mp3', upper: 'Τ', lower: 'τ' },
+            { name: 'upsilon', file: './lettres_grecques/upsilon.mp3', upper: 'Υ', lower: 'υ' },
+            { name: 'phi', file: './lettres_grecques/phi.mp3', upper: 'Φ', lower: 'φ' },
+            { name: 'chi', file: './lettres_grecques/khi.mp3', upper: 'Χ', lower: 'χ' },
+            { name: 'psi', file: './lettres_grecques/psi.mp3', upper: 'Ψ', lower: 'ψ' },
+            { name: 'omega', file: './lettres_grecques/oméga.mp3', upper: 'Ω', lower: 'ω' }
+        ];
+
+        let currentLetter = null;
+        let score = 0;
+        let attempts = 0;
+        let isUpperCase = true;
+
+        function playAudio() {
+            const audioPlayer = document.getElementById('audioPlayer');
+            if (currentLetter) {
+                audioPlayer.src = currentLetter.file;
+            }
+            audioPlayer.play();
+        }
+
+        function generateChoices() {
+            const choicesDiv = document.getElementById('choices');
+            choicesDiv.innerHTML = '';
+            const shuffledLetters = letters.sort(() => 0.5 - Math.random());
+            currentLetter = shuffledLetters[Math.floor(Math.random() * 5)];
+            shuffledLetters.slice(0, 5).forEach(letter => {
+                const btn = document.createElement('button');
+                btn.innerText = isUpperCase ? letter.upper : letter.lower;
+                btn.onclick = () => checkAnswer(letter);
+                choicesDiv.appendChild(btn);
+            });
+            playAudio();  // Prononcer automatiquement la lettre après génération des choix
+        }
+
+        function checkAnswer(selectedLetter) {
+            const feedbackDiv = document.getElementById('feedback');
+            const scoreDiv = document.getElementById('score');
+            if (selectedLetter.name === currentLetter.name) {
+                score++;
+                feedbackDiv.innerText = 'Correct!';
+                feedbackDiv.style.color = 'green';
+            } else {
+                feedbackDiv.innerText = 'Incorrect. Réessayez.';
+                feedbackDiv.style.color = 'red';
+            }
+            attempts++;
+            scoreDiv.innerText = `Score: ${score}/20`;
+
+            if (attempts < 20) {
+                setTimeout(() => {
+                    feedbackDiv.innerText = '';
+                    generateChoices();
+                }, 1500);
+            } else {
+                feedbackDiv.innerText = `Jeu terminé! Votre score final est de ${score}/20.`;
+                const replayBtn = document.createElement('button');
+                replayBtn.innerText = 'Rejouer';
+                replayBtn.onclick = resetGame;
+                document.getElementById('choices').innerHTML = '';
+                document.getElementById('choices').appendChild(replayBtn);
+            }
+        }
+
+        function resetGame() {
+            score = 0;
+            attempts = 0;
+            document.getElementById('score').innerText = 'Score: 0/20';
+            document.getElementById('feedback').innerText = '';
+            generateChoices();
+        }
+
+        function startGame(useUpperCase) {
+            isUpperCase = useUpperCase;
+            document.getElementById('menu').style.display = 'none';
+            document.getElementById('game').style.display = 'flex';
+            generateChoices();
+        }
+
+    </script>
+
+</body>
+</html>
