@@ -115,6 +115,7 @@
         let score = 0;
         let attempts = 0;
         let isUpperCase = true;
+        let feedbacktimeout = null;
 
         function playAudio() {
             const audioPlayer = document.getElementById('audioPlayer');
@@ -135,7 +136,7 @@
                 btn.onclick = () => checkAnswer(letter);
                 choicesDiv.appendChild(btn);
             });
-            playAudio();  // Prononcer automatiquement la lettre après génération des choix
+            playAudio();
         }
 
         function checkAnswer(selectedLetter) {
@@ -153,8 +154,11 @@
             attempts++;
             scoreDiv.innerText = `Score: ${score}/20`;
 
+            document.activeElement.blur();
+
             if (attempts < 20) {
-                setTimeout(() => {
+                clearTimeout(feedbacktimeout);
+                feedbacktimeout = setTimeout(() => {
                     feedbackDiv.style.visibility = 'hidden';
                 }, 1500);
                 generateChoices();
