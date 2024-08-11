@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -128,20 +127,36 @@
         function generateChoices() {
             const choicesDiv = document.getElementById('choices');
             choicesDiv.innerHTML = '';
+
             const shuffledLetters = letters.sort(() => 0.5 - Math.random());
             currentLetter = shuffledLetters[Math.floor(Math.random() * 5)];
+            
             shuffledLetters.slice(0, 5).forEach(letter => {
                 const btn = document.createElement('button');
                 btn.innerText = isUpperCase ? letter.upper : letter.lower;
-                btn.onclick = () => checkAnswer(letter);
+                btn.onclick = () => {
+                    checkAnswer(letter);
+                    // Remove focus from the button that was clicked
+                    btn.blur();
+                };
                 choicesDiv.appendChild(btn);
             });
+
+            // Play the audio for the current letter
             playAudio();
+
+            // Explicitly remove focus from all buttons
+            const allButtons = choicesDiv.getElementsByTagName('button');
+            for (let i = 0; i < allButtons.length; i++) {
+                allButtons[i].blur();
+            }
         }
 
         function checkAnswer(selectedLetter) {
             const feedbackDiv = document.getElementById('feedback');
             const scoreDiv = document.getElementById('score');
+            
+            // Check if the selected answer is correct
             if (selectedLetter.name === currentLetter.name) {
                 score++;
                 feedbackDiv.innerText = 'Correct!';
@@ -150,12 +165,13 @@
                 feedbackDiv.innerText = 'Incorrect. Réessayez.';
                 feedbackDiv.style.color = 'red';
             }
+            
+            // Show feedback and update the score
             feedbackDiv.style.visibility = 'visible';
             attempts++;
             scoreDiv.innerText = `Score: ${score}/20`;
 
-            document.activeElement.blur();
-
+            // Proceed to the next question or end the game
             if (attempts < 20) {
                 clearTimeout(feedbacktimeout);
                 feedbacktimeout = setTimeout(() => {
