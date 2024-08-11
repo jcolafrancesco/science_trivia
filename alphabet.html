@@ -50,11 +50,29 @@
             align-items: center;
             justify-content: center;
         }
-        #game {
+        #game, #learn {
             display: none;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+        }
+        #alphabetDisplay {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            font-size: 32px;
+            margin: 20px 0;
+        }
+        .letter {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 5px;
+            cursor: pointer;
+        }
+        .active-letter {
+            color: #007bff;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -65,6 +83,7 @@
         <p>Choisissez le type de lettres :</p>
         <button onclick="startGame(true)">Lettres Majuscules</button>
         <button onclick="startGame(false)">Lettres Minuscules</button>
+        <button onclick="startLearning()">Mode Apprentissage</button>
     </div>
 
     <div id="game">
@@ -80,6 +99,20 @@
         <div id="score">Score: 0/20</div>
 
         <button id="replayAudio" onclick="playAudio()">Rejouer l'audio</button>
+    </div>
+
+    <div id="learn">
+        <h1>Mode Apprentissage</h1>
+        <div id="alphabetDisplay">
+            <!-- Toutes les lettres seront affichées ici -->
+        </div>
+        <audio id="learnAudioPlayer"></audio>
+        <div>
+            <button onclick="previousLetter()">Précédent</button>
+            <button onclick="playLearnAudio()">Écouter</button>
+            <button onclick="nextLetter()">Suivant</button>
+        </div>
+        <button onclick="backToMenu()">Retour au Menu</button>
     </div>
 
     <script>
@@ -115,6 +148,7 @@
         let attempts = 0;
         let isUpperCase = true;
         let feedbacktimeout = null;
+        let currentLearnIndex = 0;
 
         function playAudio() {
             const audioPlayer = document.getElementById('audioPlayer');
@@ -205,6 +239,72 @@
             document.getElementById('menu').style.display = 'none';
             document.getElementById('game').style.display = 'flex';
             generateChoices();
+        }
+
+        function startLearning() {
+            currentLearnIndex = 0;
+            document.getElementById('menu').style.display = 'none';
+            document.getElementById('learn').style.display = 'flex';
+            displayAlphabet();
+            updateLearnMode();
+        }
+
+        function displayAlphabet() {
+            const alphabetDisplay = document.getElementById('alphabetDisplay');
+            alphabetDisplay.innerHTML = ''; // Clear any previous content
+
+            letters.forEach((letter, index) => {
+                const letterDiv = document.createElement('div');
+                letterDiv.className = 'letter';
+                letterDiv.innerHTML = `<span>${letter.upper}</span><span>${letter.lower}</span>`;
+                letterDiv.onclick = () => setActiveLetter(index);
+                alphabetDisplay.appendChild(letterDiv);
+            });
+        }
+
+        function setActiveLetter(index) {
+            currentLearnIndex = index;
+            updateLearnMode();
+        }
+
+        function updateLearnMode() {
+            const learnAudioPlayer = document.getElementById('learnAudioPlayer');
+            const alphabetDisplay = document.getElementById('alphabetDisplay');
+            const letterDivs = alphabetDisplay.getElementsByClassName('letter');
+
+            // Remove active class from all letters
+            Array.from(letterDivs).forEach(div => div.classList.remove('active-letter'));
+
+            // Add active class to the current letter
+            letterDivs[currentLearnIndex].classList.add('active-letter');
+
+            // Play the audio for the current letter
+            learnAudioPlayer.src = letters[currentLearnIndex].file;
+            playLearnAudio();
+        }
+
+        function playLearnAudio() {
+            const learnAudioPlayer = document.getElementById('learnAudioPlayer');
+            learnAudioPlayer.play();
+        }
+
+        function previousLetter() {
+            if (currentLearnIndex > 0) {
+                currentLearnIndex--;
+                updateLearnMode();
+            }
+        }
+
+        function nextLetter() {
+            if (currentLearnIndex < letters.length - 1) {
+                currentLearnIndex++;
+                updateLearnMode();
+            }
+        }
+
+        function backToMenu() {
+            document.getElementById('learn').style.display = 'none';
+            document.getElementById('menu').style.display = 'flex';
         }
 
     </script>
